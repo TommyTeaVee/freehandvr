@@ -14,3 +14,14 @@ Created by:
 * Will Farhat (willf668)
 * Yvette Copeland (yvettejade)
 * Kosi Nwabueze (kosinw)
+
+Roadmap:
+
+1. Auto-calibration
+2. Larger range in skin tone
+3. Depth
+4. Hand shapes
+5. Finger tracking
+6. Finger rotation
+7. Improving accuracy
+8. Hand size tracking
