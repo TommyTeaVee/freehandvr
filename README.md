@@ -15,7 +15,8 @@ Created by:
 * Yvette Copeland (yvettejade)
 * Kosi Nwabueze (kosinw)
 
-Roadmap:
+Roadmap (Lukas)
+:
 
 1. Auto-calibration
 2. Larger range in skin tone
