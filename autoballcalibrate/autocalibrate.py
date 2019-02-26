@@ -26,26 +26,6 @@ import re
 ## OUTPUT IT TO FILE
 ## EXPAND HUE SAMPLING REGION
 
-def rgb2hsv(r, g, b):
-    r, g, b = r/255.0, g/255.0, b/255.0
-    mx = max(r, g, b)
-    mn = min(r, g, b)
-    df = mx-mn
-    if mx == mn:
-        h = 0
-    elif mx == r:
-        h = (60 * ((g-b)/df) + 360) % 360
-    elif mx == g:
-        h = (60 * ((b-r)/df) + 120) % 360
-    elif mx == b:
-        h = (60 * ((r-g)/df) + 240) % 360
-    if mx == 0:
-        s = 0
-    else:
-        s = df/mx
-    v = mx
-    return (h, s, v)
-
 if len(sys.argv) != 3:
 	print 'Wrong options'
 	exit(1)
@@ -101,7 +81,7 @@ while True:
 		break
 cv2.destroyAllWindows()
 if len(data) >= 30:
-	higher = (255, 255, 255) ## for hsv later
+	higher = (180, 255, 255) ## for hsv later
 	sumX, sumY, sumR = 0, 0, 0
 	for i in range(len(data)):
 		sumX += data[i][0]
@@ -111,7 +91,7 @@ if len(data) >= 30:
 	avgY = int(sumY/ 30)
 	## now get bgr value at that averaged point
 	bgr = frame[avgX, avgY]
-	lower = rgb2hsv(bgr[0], bgr[1], bgr[2])
+	lower = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
 	while True:
 
 		#read the image from the camera
