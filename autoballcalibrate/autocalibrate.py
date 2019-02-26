@@ -10,12 +10,41 @@ import re
 ## then sample a hue
 ## play around with values till good
 ## need to run this twice, one red and one blue
-## SUPPRESS OUTPUT LATER ON UNLESS D IS SPECIFIED
 ## usage: python autocalibrate.py color cameraNum (Ex. python autocalibrate.py red 0)
 ## add more color options
 ## specify red or blue
 
-## when it detects 50 data points, jump out loop and start going on, average those values and continue
+## when it detects 30 data points, jump out loop and start going on, average those values and continue
+
+## TODO:
+## 	CLEAN UP GUI
+## SUPPRESS OUTPUT LATER ON UNLESS D IS SPECIFIED
+## FIX COLOR OPTIONS
+## OVERLAY TO ALERT USERS TO HOLD STILL
+## add option after quitting to go to manual mode, will do later
+## OUTLIER ISSUE
+## OUTPUT IT TO FILE
+## EXPAND HUE SAMPLING REGION
+
+def rgb2hsv(r, g, b):
+    r, g, b = r/255.0, g/255.0, b/255.0
+    mx = max(r, g, b)
+    mn = min(r, g, b)
+    df = mx-mn
+    if mx == mn:
+        h = 0
+    elif mx == r:
+        h = (60 * ((g-b)/df) + 360) % 360
+    elif mx == g:
+        h = (60 * ((b-r)/df) + 120) % 360
+    elif mx == b:
+        h = (60 * ((r-g)/df) + 240) % 360
+    if mx == 0:
+        s = 0
+    else:
+        s = df/mx
+    v = mx
+    return (h, s, v)
 
 if len(sys.argv) != 3:
 	print 'Wrong options'
@@ -27,6 +56,8 @@ else:
 	filename = 'blue.txt'
 
 number = int(re.search(r'\d+', sys.argv[2]).group())
+
+data = []
 
 while True:
 
@@ -60,12 +91,46 @@ while True:
 			# corresponding to the center of the circle
 			cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
 			cv2.rectangle(frame, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
+			data.append((x,y,r))
 	# Quit the program when Q is pressed
 	cv2.imshow('Main Output', frame)
 	cv2.imshow('Calibrated Detection', gray)
+	if len(data) >= 30:
+		break
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
+cv2.destroyAllWindows()
+if len(data) >= 30:
+	higher = (255, 255, 255) ## for hsv later
+	sumX, sumY, sumR = 0, 0, 0
+	for i in range(len(data)):
+		sumX += data[i][0]
+		sumY += data[i][1]
+		## sumR += data[i][2] ## MAYBE USE FOR OUTLIER DETECTION
+	avgX = int(sumX / 30)
+	avgY = int(sumY/ 30)
+	## now get bgr value at that averaged point
+	bgr = frame[avgX, avgY]
+	lower = rgb2hsv(bgr[0], bgr[1], bgr[2])
+	while True:
 
+		#read the image from the camera
+		videoSrc = VideoStream(src=number).start()    
+
+		#You will need this later
+		frame = videoSrc.read()
+		
+		frame = imutils.resize(frame, width=600)
+		blurred = cv2.GaussianBlur(frame, (11, 11), 0)
+		hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
+		
+		mask = cv2.inRange(hsv, lower, higher)
+		mask = cv2.erode(mask, None, iterations=2)
+		mask = cv2.dilate(mask, None, iterations=2)
+		cv2.imshow('Calibrated Detection', mask)
+		if cv2.waitKey(1) & 0xFF == ord('q'):
+			break
 text_file = open(filename, "w")
-
-## add option after quitting to go to manual mode, will do later
+text_file.close()
+print lower
+cv2.destroyAllWindows()
