@@ -5,6 +5,7 @@ import imutils
 import numpy as np
 import sys
 import re
+import time
 ## plan
 ## detect a ball first of all with opencv
 ## then sample a hue
@@ -78,7 +79,8 @@ while True:
 			# corresponding to the center of the circle
 			cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
 			cv2.rectangle(frame, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
-			data.append((x,y,r))
+			if x != 0 and y != 0:
+				data.append((x,y,r))
 	# Quit the program when Q is pressed
 	cv2.imshow('Main Output', frame)
 	cv2.imshow('Grayscale', gray)
@@ -88,34 +90,26 @@ while True:
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
 cv2.destroyAllWindows()
+time.sleep(5)
 if len(data) >= 30:
-	blue, green, red = 0, 0, 0
+	avgX, avgY = 0, 0
 	for i in range(len(data)):
-		try:
-			pixel = frame[data[i][0], data[i][1]]
-		except:
-			pass
-		blue += pixel[0]
-		green += pixel[1]
-		red += pixel[2]
-		## sumR += data[i][2] ## MAYBE USE FOR OUTLIER DETECTION
-	blue = int(blue / 30)
-	red = int(red / 30)
-	green = int(green / 30)
-	blue = blue if blue <= 255 else 255
-	red = red if red <= 255 else 255
-	green = green if green <= 255 else 255
-	#print red ## COMMENT THE FOLLOWING STATEMENTS OUT
-	#print green
-	#print blue
-	lower = [[[blue, green, red]]]
-	lower = np.uint8(lower)
-	temp = lower
-	lower = cv2.cvtColor(lower, cv2.COLOR_BGR2HSV)
-	lower = [lower[0][0][0], lower[0][0][1], lower[0][0][2]]
-	lowerb = np.array(lower, np.uint8)
-	higher = np.array([179, 255, 255], np.uint8) ## for hsv later
+		avgX += data[i][0]
+		avgY += data[i][1]
+	avgX = int(avgX / 30)
+	avgY = int(avgY / 30)
+	pixel = frame[avgX, avgY]
+	blurred = cv2.GaussianBlur(frame, (11, 11), 0)
+	hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
+	hsvPixel = hsv[avgX, avgY]
+	lower = ((hsvPixel[0] - 10) if hsvPixel[0] >= 10 else 0, (hsvPixel[1] - 10) if hsvPixel[1] >= 10 else 0, (hsvPixel[2] - 40) if hsvPixel[2] >= 40 else 0)
+	higher = (hsvPixel[0] + 10, hsvPixel[1] + 10, hsvPixel[2] + 40)
+	#lower = (hsvPixel[0], hsvPixel[1], hsvPixel[2])
+	lower = np.array(lower, np.uint8)
+	higher = np.array(higher, np.uint8)
+	## utilize the radius too
 	print lower ## REMOVE LATER ON
+	print higher
 	while True:
 
 		#read the image from the camera
@@ -128,16 +122,21 @@ if len(data) >= 30:
 		blurred = cv2.GaussianBlur(frame, (11, 11), 0)
 		hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 		
-		mask = cv2.inRange(hsv, lowerb, higher)
+		mask = cv2.inRange(hsv, lower, higher)
 		mask = cv2.erode(mask, None, iterations=2)
 		mask = cv2.dilate(mask, None, iterations=2)
+		cv2.rectangle(hsv, (avgX - 5, avgY - 5), (avgX + 5, avgY + 5), (0, 128, 255), -1)
 		cv2.imshow('Calibrated Detection', mask)
 		cv2.imshow('Main Output', frame)
+		cv2.imshow('HSV Output', hsv)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
 text_file = open(filename, "w")
 text_file.close()
 print 'values calibrated'
-print temp
-print lowerb
+print pixel
+print lower
+print higher
+for i in range(len(data)):
+		print str(data[i][0]) + ", " + str(data[i][0])
 cv2.destroyAllWindows()
