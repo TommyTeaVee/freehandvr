@@ -47,7 +47,7 @@ while camera.isOpened():
     ret, frame = camera.read()
     frame = cv2.bilateralFilter(frame, 5, 50, 100)  # Smoothing
     frame = cv2.flip(frame, 1)  #Horizontal Flip
-    cv2.imshow('original', frame)
+    #cv2.imshow('original', frame)
 
     #Background Removal
     bgModel = cv2.createBackgroundSubtractorMOG2(0, 50)
@@ -91,7 +91,11 @@ while camera.isOpened():
     if k == 27:  # press ESC to exit
         break
 
-    print frame[(100, 100)]
-    cv2.putText(frame, 'Hello World!', (50, 50), cv2.FONT_ITALIC, 0.1, 255)
+    cv2.putText(frame, 'O', (300, 110), cv2.FONT_ITALIC, 0.3, 255)
+    cv2.putText(frame, 'O', (225, 135), cv2.FONT_ITALIC, 0.3, 255)
+    cv2.putText(frame, 'O', (385, 140), cv2.FONT_ITALIC, 0.3, 255)
+    cv2.putText(frame, 'O', (460, 215), cv2.FONT_ITALIC, 0.3, 255)
+    cv2.putText(frame, 'O', (100, 285), cv2.FONT_ITALIC, 0.3, 255)
+    cv2.putText(frame, 'O', (310, 350), cv2.FONT_ITALIC, 0.3, 255)
     cv2.imshow('Video', frame)
 
