@@ -25,6 +25,10 @@ import re
 ## OUTLIER ISSUE
 ## OUTPUT IT TO FILE
 ## EXPAND HUE SAMPLING REGION
+## PROPER EXITING
+## TRY CATCH ALL PROBLEMS
+## GET RID OF PRINT DEBUG
+## BETTER CONVERSION SYSTEM
 
 if len(sys.argv) != 3:
 	print 'Wrong options'
@@ -46,22 +50,25 @@ while True:
 	
 	#You will need this later
 	frame = videoSrc.read()
-		
+	
+	if frame is None:
+		continue
+	
 	frame = imutils.resize(frame, width=600)
 	
 	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 	## smooth and blur
 	gray = cv2.GaussianBlur(gray,(5,5),0);
-	gray = cv2.medianBlur(gray,5)
+	gray = cv2.medianBlur(gray,7)
 	
 	# Adaptive Guassian Threshold is to detect sharp edges in the Image. For more information Google it.
 	gray = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
             cv2.THRESH_BINARY,11,3.5)
 	## erode and dilate
-	gray = cv2.erode(gray, None, iterations=5)
-	gray = cv2.dilate(gray, None, iterations=5)
+	edit = cv2.erode(gray.copy(), None, iterations=5)
+	edit = cv2.dilate(edit, None, iterations=5)
 	## detect circles
-	circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 200, param1=30, param2=45, minRadius=0, maxRadius=200)
+	circles = cv2.HoughCircles(edit, cv2.HOUGH_GRADIENT, 1, 200, param1=30, param2=45, minRadius=0, maxRadius=200)
 	if circles is not None:
 		## convert the (x, y) coordinates and radius of the circles to integers
 		circles = np.round(circles[0, :]).astype("int")
@@ -74,24 +81,41 @@ while True:
 			data.append((x,y,r))
 	# Quit the program when Q is pressed
 	cv2.imshow('Main Output', frame)
-	cv2.imshow('Calibrated Detection', gray)
+	cv2.imshow('Grayscale', gray)
+	cv2.imshow('Calibrated Detection', edit)
 	if len(data) >= 30:
 		break
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
 cv2.destroyAllWindows()
 if len(data) >= 30:
-	higher = (180, 255, 255) ## for hsv later
-	sumX, sumY, sumR = 0, 0, 0
+	blue, green, red = 0, 0, 0
 	for i in range(len(data)):
-		sumX += data[i][0]
-		sumY += data[i][1]
+		try:
+			pixel = frame[data[i][0], data[i][1]]
+		except:
+			pass
+		blue += pixel[0]
+		green += pixel[1]
+		red += pixel[2]
 		## sumR += data[i][2] ## MAYBE USE FOR OUTLIER DETECTION
-	avgX = int(sumX / 30)
-	avgY = int(sumY/ 30)
-	## now get bgr value at that averaged point
-	bgr = frame[avgX, avgY]
-	lower = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
+	blue = int(blue / 30)
+	red = int(red / 30)
+	green = int(green / 30)
+	blue = blue if blue <= 255 else 255
+	red = red if red <= 255 else 255
+	green = green if green <= 255 else 255
+	#print red ## COMMENT THE FOLLOWING STATEMENTS OUT
+	#print green
+	#print blue
+	lower = [[[blue, green, red]]]
+	lower = np.uint8(lower)
+	temp = lower
+	lower = cv2.cvtColor(lower, cv2.COLOR_BGR2HSV)
+	lower = [lower[0][0][0], lower[0][0][1], lower[0][0][2]]
+	lowerb = np.array(lower, np.uint8)
+	higher = np.array([179, 255, 255], np.uint8) ## for hsv later
+	print lower ## REMOVE LATER ON
 	while True:
 
 		#read the image from the camera
@@ -104,13 +128,16 @@ if len(data) >= 30:
 		blurred = cv2.GaussianBlur(frame, (11, 11), 0)
 		hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 		
-		mask = cv2.inRange(hsv, lower, higher)
+		mask = cv2.inRange(hsv, lowerb, higher)
 		mask = cv2.erode(mask, None, iterations=2)
 		mask = cv2.dilate(mask, None, iterations=2)
 		cv2.imshow('Calibrated Detection', mask)
+		cv2.imshow('Main Output', frame)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
 text_file = open(filename, "w")
 text_file.close()
-print lower
+print 'values calibrated'
+print temp
+print lowerb
 cv2.destroyAllWindows()
