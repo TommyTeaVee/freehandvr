@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-public class 
+public class StartAndEnd
 {
 	// remember to start windows hidden
 	public static string xyStart; //once close to finish, compile all scripts into one exe
