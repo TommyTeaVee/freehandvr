@@ -281,5 +281,5 @@ while stepNum == 1:
         cv2.putText(frame, 'O', (460, 215), cv2.FONT_ITALIC, 0.3, 255)
         cv2.putText(frame, 'O', (100, 285), cv2.FONT_ITALIC, 0.3, 255)
         cv2.putText(frame, 'O', (310, 350), cv2.FONT_ITALIC, 0.3, 255)
-        cv2.imshow('Video', frame)
+        cv2.imshow('Video', frame);
 
