@@ -26,3 +26,4 @@ Roadmap (Lukas)
 6. Finger rotation
 7. Improving accuracy
 8. Hand size tracking
+9. Use shaders, convolution filters, and image kernels to improve tracking and accuracy (hopefully, even use GPGPU)
