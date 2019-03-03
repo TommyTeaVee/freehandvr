@@ -1,0 +1,21 @@
+for python files, just pip install the requirements in python2 (opencv, numpy, matplotlib, imutils, tensorflow)
+for c++ files, 2 ways:
+1. Windows
+	-Download and extract OpenCV 3.4.5 (you can compile it to in cmake, but make sure it's x86)
+	-Use Visual Studio 2017 (vc15)
+	-create an environmental variable called OPENCV_DIR using the build location from the extraction
+	-start Visual Studio 2017 and configure the project (make sure project is x64)
+	-add $(OPENCV_DIR)\include in Additional Include Directories (Properties, C/C++)
+	-add $(OPENCV_DIR)\x64\vc15\lib to the general section of linkers
+	-add opencv_world345d.lib (for debug) or opencv_world345.lib under input, edit additional dependencies
+	-make sure to add the bin folder containing the dlls for opencv_world into your PATH
+2. Linux (tested on Debian)
+	-Download and extract OpenCV 3.4.5
+	-[compiler] sudo apt-get install build-essential
+	-[required] sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+	-[optional] sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-devbdc1394-22-dev
+	-configure and generate with cmake
+	-classic make make install
+	-make sure you have pkg-config
+	-ldconfig it
+	-compile with clang++ -std=c++11 test.cpp -o w `pkg-config --cflags --libs opencv`
