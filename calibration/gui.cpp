@@ -3,6 +3,7 @@
 int calibrate(info *data) //return 1 to stop the same interface from repeating
 {
 	UMat mainImage, hsvImage, thresholdedImage, combinedView;
+	//UMat implicitly uses the GPU OpenCL acceleration if available
 	int cont = 1; //check if continue
 	VideoCapture source(data->camera); //start camera from camera number defined in structs
 	int lowh = 90;
