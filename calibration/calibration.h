@@ -26,11 +26,15 @@ const char * const INSTRUCTION5 = "B - prev cam";
 const char * const INSTRUCTION6 = "Enter - confirm values";
 const char * const INSTRUCTION7 = "Avoid Balls of Similar Colors";
 
+//possible filenames
+const char * const FILENAME1 = "color1";
+const char * const FILENAME2 = "color2";
+const char * const FILENAME3 = "hand";
+
 struct info
 {
 	int camera : 5; //cap at 15
 	int color : 3; //color1, or color2, or hand - 1, 2, 3
-	char lowerHSV[8]; //literally only need 8 bytes to store it for the later programs
 };
 
 extern inline int countCameras();
@@ -39,7 +43,7 @@ extern inline int processCalibrate(info *data, const char* display, int flag);
 
 int calibrate(info *data, const char *whichOne, int flag);
 
-void writeData(int h, int s, int v, const char *filename);
+void writeData(int h, int s, int v, int cam, const char *filename);
 
 void provideBaseValues(int &lowh, int &lows, int &lowv, int flag);
 

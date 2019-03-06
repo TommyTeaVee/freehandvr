@@ -4,6 +4,19 @@ int calibrate(info *data, const char *whichOne, int flag) //return 1 to stop the
 {
 	//RETURN VALUES:
 	//return 0 for exit, 1 for next camera, 2 for previous camera, 3 for continue
+	const char *FILENAME;
+	if (data->color == 1)
+	{
+		FILENAME = FILENAME1;
+	}
+	else if (data->color == 2)
+	{
+		FILENAME = FILENAME2;
+	}
+	else
+	{
+		FILENAME = FILENAME3;
+	}
 	UMat mainImage, hsvImage, thresholdedImage, combinedView;
 	int retValue;
 	//UMat allows for OpenCV to use OpenGL acceleration
@@ -71,7 +84,7 @@ int calibrate(info *data, const char *whichOne, int flag) //return 1 to stop the
 					retValue = 2;
 					break;
 				default: //13
-					writeData(lowh, lows, lowv, whichOne);
+					writeData(lowh, lows, lowv, data->camera, FILENAME);
 					retValue = 3;
 			}
 		}

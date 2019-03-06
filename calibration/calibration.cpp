@@ -37,6 +37,10 @@ int main(int argc, char** argv) //default (0) is red, 1 is orange, 2 is yellow, 
 	color1->camera = 0;
 	color2->camera = 0;
 	hand->camera = 0;
+	//initialize more values
+	color1->color = 1;
+	color2->color = 2;
+	hand->color = 3;
 	//for color1
 	if (cont)
 	{
