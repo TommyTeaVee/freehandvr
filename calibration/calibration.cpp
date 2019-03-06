@@ -1,4 +1,4 @@
-// calibration.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// calibration.cpp : This file contains the 'main' function. Program execution begins and ends here.
 //
 //REMEMBER TO CHECK FOR THE EDGE CASES AND ERRORS
 
@@ -7,6 +7,7 @@
 int main()
 {
 	//getting camera count
+	int retValue = 4; //set to 4 so can pass the conditions in the loop
 	int numCams = countCameras();
 	info *color1 = new info;
 	info *color2 = new info;
@@ -15,7 +16,7 @@ int main()
 	color1->camera = 0;
 	color2->camera = 0;
 	hand->camera = 0;
-	calibrate(color1);
+	calibrate(color1, COLOR1STR);
 	//cleanup
 	delete color1;
 	delete color2;
@@ -23,6 +24,7 @@ int main()
 	color1 = 0;
 	color2 = 0;
 	hand = 0;
+	return 0;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
