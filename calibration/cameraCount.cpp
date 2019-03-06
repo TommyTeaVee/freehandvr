@@ -13,6 +13,7 @@ int countCameras()
 			break;
 		}
 		index++;
+		source.release();
 	}
 	return index;
 }

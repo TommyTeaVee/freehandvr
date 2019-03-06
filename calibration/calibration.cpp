@@ -16,6 +16,13 @@ int main()
 	color2->camera = 0;
 	hand->camera = 0;
 	calibrate(color1);
+	//cleanup
+	delete color1;
+	delete color2;
+	delete hand;
+	color1 = 0;
+	color2 = 0;
+	hand = 0;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

@@ -3,15 +3,16 @@
 int calibrate(info *data) //return 1 to stop the same interface from repeating
 {
 	UMat mainImage, hsvImage, thresholdedImage, combinedView;
-	//UMat implicitly uses the GPU OpenCL acceleration if available
+	//UMat allows for OpenCV to use OpenGL acceleration
 	int cont = 1; //check if continue
-	VideoCapture source(data->camera); //start camera from camera number defined in structs
 	int lowh = 90;
 	int lows = 170;
 	int lowv = 70;
 	int highh = 179;
 	int highs = 255;
 	int highv = 255;
+	int key = 0;
+	VideoCapture source(data->camera); //start camera from camera number defined in structs
 	namedWindow("Calibration", CV_WINDOW_AUTOSIZE); //create calibration window
 	//Create trackbars, usually low changing values is sufficient
 	cvCreateTrackbar("LowH", "Calibration", &lowh, 179); //Hue (0 - 179)
@@ -34,7 +35,8 @@ int calibrate(info *data) //return 1 to stop the same interface from repeating
 		hconcat(mainImage, thresholdedImage, combinedView);
 		//show windows
 		imshow("Calibration View", combinedView);
-		if (waitKey(20) == 27)
+		key = waitKey(20);
+		if ((key == 27) || (key == 110) || (key == 98)|| (key == 13)) //ESC, n, b, return
 		{
 			cont = 0;
 		}

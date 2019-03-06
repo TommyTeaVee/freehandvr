@@ -16,7 +16,7 @@ struct info
 	char lowerHSV[8]; //literally only need 8 bytes to store it for the later programs
 };
 
-int countCameras();
+extern inline int countCameras();
 
 int calibrate(info *data);
 
