@@ -23,6 +23,8 @@ struct info
 
 extern inline int countCameras();
 
+extern inline int processCalibrate(info *data, const char* display);
+
 int calibrate(info *data, const char *whichOne);
 
 void writeData(int h, int s, int v, const char *filename);

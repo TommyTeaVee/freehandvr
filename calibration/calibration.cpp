@@ -4,11 +4,14 @@
 
 #include "calibration.h"
 
+int cam = 0; //cam variable will allow to switch cameras
+int numCams;
+
 int main()
 {
+	int cont = 1; // check if continue the calibration process
 	//getting camera count
-	int retValue = 4; //set to 4 so can pass the conditions in the loop
-	int numCams = countCameras();
+	numCams = countCameras();
 	info *color1 = new info;
 	info *color2 = new info;
 	info *hand = new info;
@@ -16,7 +19,21 @@ int main()
 	color1->camera = 0;
 	color2->camera = 0;
 	hand->camera = 0;
-	calibrate(color1, COLOR1STR);
+	//for color1
+	if (cont)
+	{
+		cont = processCalibrate(color1, COLOR1STR);
+	}
+	//for color2
+	if (cont)
+	{
+		cont = processCalibrate(color2, COLOR2STR);
+	}
+	//for hand
+	if (cont)
+	{
+		cont = processCalibrate(hand, HANDSTR);
+	}
 	//cleanup
 	delete color1;
 	delete color2;
@@ -25,6 +42,36 @@ int main()
 	color2 = 0;
 	hand = 0;
 	return 0;
+}
+
+inline int processCalibrate(info *data, const char* display) //return 1 if just go on, if returns 0, means user wants to exit, this function is to aid with camera, continue, switching, etc. processes
+{
+	//for switching cameras, remember to properly cap
+	int retValue = 4; //set to 4 to prime the loop
+	while (retValue == 4)
+	{
+		retValue = calibrate(data, display);
+		if (retValue == 0)
+		{
+			break;
+		}
+		if (retValue == 1)
+		{
+			data->camera = ((data->camera + 1) == numCams) ? 0 : (data->camera + 1);
+			retValue = 4;
+		}
+		if (retValue == 2)
+		{
+			data->camera = ((data->camera - 1) == -1) ? (numCams - 1) : (data->camera - 1);
+			retValue = 4;
+		}
+		if (retValue == 3)
+		{
+			break;
+		}
+	}
+	return (retValue == 0) ? 0 : 1;
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
