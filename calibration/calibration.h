@@ -14,6 +14,18 @@ const char * const COLOR1STR = "Calibration for Color 1";
 const char * const COLOR2STR = "Calibration for Color 2";
 const char * const HANDSTR = "Calibration for Hand";
 
+//window name
+const char * const WINDOWNAME = "FreeHandVR Calibration";
+
+//instruction strings
+const char * const INSTRUCTION1 = "Adjust the Values";
+const char * const INSTRUCTION2 = "until you see an Optimal Circle ->";
+const char * const INSTRUCTION3 = "ESC - exit";
+const char * const INSTRUCTION4 = "N - next cam";
+const char * const INSTRUCTION5 = "B - prev cam";
+const char * const INSTRUCTION6 = "Enter - confirm values";
+const char * const INSTRUCTION7 = "Avoid Balls of Similar Colors";
+
 struct info
 {
 	int camera : 5; //cap at 15
@@ -23,10 +35,12 @@ struct info
 
 extern inline int countCameras();
 
-extern inline int processCalibrate(info *data, const char* display);
+extern inline int processCalibrate(info *data, const char* display, int flag);
 
-int calibrate(info *data, const char *whichOne);
+int calibrate(info *data, const char *whichOne, int flag);
 
 void writeData(int h, int s, int v, const char *filename);
+
+void provideBaseValues(int &lowh, int &lows, int &lowv, int flag);
 
 

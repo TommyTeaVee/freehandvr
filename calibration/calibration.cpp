@@ -7,11 +7,29 @@
 int cam = 0; //cam variable will allow to switch cameras
 int numCams;
 
-int main()
+int main(int argc, char** argv) //default (0) is red, 1 is orange, 2 is yellow, 3 is green, 4 is blue, 5 is purple: if you want to pass, you must pass two values with those specs, //return 0 is good, -1 if no cameras found
 {
+	int colFlag1; //color flags, help user get better base values faster
+	int colFlag2;
+	if (argc == 3)
+	{
+		colFlag1 = argv[1][0] - '0'; //parsing arguments
+		colFlag2 = argv[2][0] - '0';
+		colFlag1 = (colFlag1 > 5 || colFlag1 < 0) ? 0 : colFlag1;
+		colFlag2 = (colFlag2 > 5 || colFlag2 < 0) ? 0 : colFlag2;
+	}
+	else
+	{
+		colFlag1 = 0;
+		colFlag2 = 0;
+	}
 	int cont = 1; // check if continue the calibration process
 	//getting camera count
 	numCams = countCameras();
+	if (numCams == 0)
+	{
+		return -1; //no cameras detected
+	}
 	info *color1 = new info;
 	info *color2 = new info;
 	info *hand = new info;
@@ -22,17 +40,17 @@ int main()
 	//for color1
 	if (cont)
 	{
-		cont = processCalibrate(color1, COLOR1STR);
+		cont = processCalibrate(color1, COLOR1STR, colFlag1);
 	}
 	//for color2
 	if (cont)
 	{
-		cont = processCalibrate(color2, COLOR2STR);
+		cont = processCalibrate(color2, COLOR2STR, colFlag2);
 	}
 	//for hand
 	if (cont)
 	{
-		cont = processCalibrate(hand, HANDSTR);
+		cont = processCalibrate(hand, HANDSTR, 6);
 	}
 	//cleanup
 	delete color1;
@@ -44,13 +62,13 @@ int main()
 	return 0;
 }
 
-inline int processCalibrate(info *data, const char* display) //return 1 if just go on, if returns 0, means user wants to exit, this function is to aid with camera, continue, switching, etc. processes
+inline int processCalibrate(info *data, const char* display, int flag) //return 1 if just go on, if returns 0, means user wants to exit, this function is to aid with camera, continue, switching, etc. processes
 {
 	//for switching cameras, remember to properly cap
 	int retValue = 4; //set to 4 to prime the loop
 	while (retValue == 4)
 	{
-		retValue = calibrate(data, display);
+		retValue = calibrate(data, display, flag);
 		if (retValue == 0)
 		{
 			break;
